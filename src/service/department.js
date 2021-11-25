@@ -1,8 +1,9 @@
-let {DOCTORS} = require('../data/mock_data');
+let {DEPARTMENTS} = require('../data/mock_data');
 
 const getAll = () => {
-	return { data: DOCTORS, count: DOCTORS.length };
+	return { data: DEPARTMENTS , count: DEPARTMENTS.length };
 }	
+
 
 module.exports = {
   getAll,
