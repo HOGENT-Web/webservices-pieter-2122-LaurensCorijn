@@ -20,17 +20,6 @@ let DOCTORS = [
   department = DEPARTMENTS[0]
 }
 ]
-let SPECIALIZATIOONS = [
-  {
-    id = 1,
-    name = 'Pediatrie',
-
-  },
-  {
-    id = 2,
-    name = ''
-  }
-]
 
 let DEPARTMENTS = [
   {
@@ -344,5 +333,11 @@ let DEPARTMENTS = [
     name = 'Medisch centrum',
     location = 'Bloemenboslaan 26',
     hospital = 'Medisch centrum Zelzate'
+  }
+]
+
+let CONSULTATIONS = [
+  {
+    
   }
 ]
