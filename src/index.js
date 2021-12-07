@@ -1,10 +1,9 @@
-const config = require('config');
 const Koa = require('koa');
+const config = require('config');
 const koaCors = require('@koa/cors');
-const getLogger = require('./core/logging');
+const { initializeLogger, getLogger} = require('./core/logging');
 const bodyParser = require('koa-bodyparser');
-const Router = require('@koa/router');
-const doctorService = require('./service/doctors');
+const installRest = require('./rest');
 
 const NODE_ENV = config.get('env');
 const CORS_ORIGINS = config.get('cors.origins');
@@ -12,7 +11,12 @@ const CORS_MAX_AGE = config.get('cors.maxAge');
 const LOG_LEVEL = config.get('log.level');
 const LOG_DISABLED = config.get('log.disabled');
 
-console.log(`log level ${LOG_LEVEL}, logs enabled: ${LOG_DISABLED !== true}`)
+initializeLogger({
+	level: LOG_LEVEL,
+	disabled: LOG_DISABLED,
+	isProduction: NODE_ENV === 'production',
+	defaultMeta: {NODE_ENV}
+});
 
 const app = new Koa();
 
@@ -34,17 +38,7 @@ const logger = getLogger();
 
 app.use(bodyParser());
 
-const router = new Router();
+installRest(app);
 
-router.get('/api/doctors', async (ctx) => {
-	logger.info(JSON.stringify(ctx.request));
-	ctx.body = doctorService.getAll();
-})
-
-app
-		.use(router.routes())
-		.use(router.allowedMethods());
- 
-const port = 9000;
-app.listen(port);
-logger.info(`Server listening on http://localhost:${port}`);
+app.listen(9000);
+logger.info(`Server listening on http://localhost:9000`);

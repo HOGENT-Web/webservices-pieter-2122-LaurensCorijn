@@ -341,3 +341,7 @@ let CONSULTATIONS = [
     
   }
 ]
+
+module.exports = {
+  CONSULTATIONS, DOCTORS, DEPARTMENTS
+};
