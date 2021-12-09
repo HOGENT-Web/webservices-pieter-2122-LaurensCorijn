@@ -1,5 +1,7 @@
-const {getChildLogger} = require('../core/logging');
+const uuid = require('uuid');
+const { getChildLogger } = require('../core/logging');
 let {DEPARTMENTS} = require('../data/mock_data');
+
 
 const debugLog = (message, meta = {}) => {
   if(!this.logger)this.logger = getChildLogger('department-service');
