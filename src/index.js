@@ -4,6 +4,7 @@ const koaCors = require('@koa/cors');
 const { initializeLogger, getLogger} = require('./core/logging');
 const bodyParser = require('koa-bodyparser');
 const installRest = require('./rest');
+const { initializeData, shutdownData} = require('./data');
 
 const NODE_ENV = config.get('env');
 const CORS_ORIGINS = config.get('cors.origins');
@@ -17,6 +18,8 @@ initializeLogger({
 	isProduction: NODE_ENV === 'production',
 	defaultMeta: {NODE_ENV}
 });
+
+initializeData();
 
 const app = new Koa();
 
