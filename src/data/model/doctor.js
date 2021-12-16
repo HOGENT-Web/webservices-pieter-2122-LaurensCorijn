@@ -1,43 +1,37 @@
 const { DataTypes, Model} = require('sequelize');
 
-class Department extends Model{
+class Doctor extends Model{
     /** @type {UUID} */
-    dept_id;
+    doc_id;
 
     /** @type {string} */
-    dept_name;
+    doc_firstname;
 
     /** @type {string} */
-    dept_location;
+    doc_lastname;
 
-    /** @type {string} */
-    dept_hospital;
+    /** Department toevoegen */
 
     static initialize(sequelize){
-
-        Department.init({
-            dept_id: {
+        Doctor.init({
+            doc_id: {
                 type: DataTypes.UUID,
                 allowNull: false,
                 primaryKey: true,
-                defaultValue: DataTypes.UUIDV4
+                defaultValue: DataTypes.UUIDV4,
             },
-            dept_name: {
+            doc_firstname: {
                 type: DataTypes.STRING,
                 allowNull: false,
             },
-            dept_location: {
-                type: DataTypes.STRING,
-                allowNull: false,
-            },
-            dept_hospital: {
+            doc_lastname: {
                 type: DataTypes.STRING,
                 allowNull: false,
             }
-        }, {
+        },{
             sequelize,
-            modelName: 'Department',
-            tableName: 'departments',
+            modelName: 'Doctor',
+            tableName: 'doctors',
             freezeTableName: true,
             timestamps: false,
             deletedAt: false,
@@ -45,4 +39,4 @@ class Department extends Model{
     }
 }
 
-module.exports = Department;
+module.exports = Doctor;

@@ -40,6 +40,7 @@ async function initializeData() {
         .forEach((model) => {
             if(model.initialize){
                 model.initialize(sequelize);
+                logger.info('Tabel aangemaakt')
             }
         });
     logger.info('Gelukt3');       
