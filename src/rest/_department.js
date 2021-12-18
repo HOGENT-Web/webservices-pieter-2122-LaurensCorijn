@@ -2,11 +2,11 @@ const Router = require('@koa/router');
 const departmentService = require('../service/department');
 
 const getAllDepartments = async (ctx) => {
-    ctx.body = departmentService.getAll();
+    ctx.body = await departmentService.getAll();
 };
 
 const getDepartmentById = async (ctx) => {
-    ctx.body = departmentService.getById(ctx.params.id);
+    ctx.body = await departmentService.getById(ctx.params.id);
 };
 
 const createDepartment = async (ctx) => {

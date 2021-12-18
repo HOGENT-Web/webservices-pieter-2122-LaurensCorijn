@@ -1,10 +1,11 @@
-const { Sequelize } = require('sequelize');
 const config = require('config');
-const models = require('./model');
+const knex = require('knex');
+const { join } = require('path');
 
 const { getChildLogger } = require('../core/logging');
 
 const NODE_ENV = config.get('env');
+const isDevelopment = NODE_ENV === 'development';
 
 const DATABASE_CLIENT = config.get('database.client');
 const DATABASE_NAME = config.get('database.name');
@@ -13,50 +14,129 @@ const DATABASE_PORT = config.get('database.port');
 const DATABASE_USERNAME = config.get('database.username');
 const DATABASE_PASSWORD = config.get('database.password');
 
-async function initializeData() {
+let knexInstance;
 
-    const logger = getChildLogger('database');
-    logger.info('Initializing connection to the database');
-
-    const sequelize = new Sequelize(DATABASE_NAME, DATABASE_USERNAME, DATABASE_PASSWORD, {
-       // ...otherConfig,
-        host: 'localhost',
-        dialect: 'mysql'
-    });
-
-    logger.info('Gelukt1')
-
-    try{
-        await sequelize.authenticate();
-        console.log('Connection has been established successfully.');
-    }catch(error)
-    {
-        console.error('Unable to connect to the database:',error);
+const getKnexLogger = (logger, level) => (message) => {
+    if (message.sql) {
+      logger.log(level, message.sql);
+    } else if (message.length && message.forEach) {
+      message.forEach((innerMessage) =>
+        logger.log(level, innerMessage.sql ? innerMessage.sql : JSON.stringify(innerMessage)));
+    } else {
+      logger.log(level, JSON.stringify(message));
     }
+  };
 
-    logger.info('Gelukt2');  
+async function initializeData() {
+  const logger = getChildLogger('database');
+  logger.info('Initializing connection to the database');
 
-    Object.values(models)
-        .forEach((model) => {
-            if(model.initialize){
-                model.initialize(sequelize);
-                logger.info('Tabel aangemaakt')
-            }
-        });
-    logger.info('Gelukt3');       
-};
+  const knexOptions = {
+    client: DATABASE_CLIENT,
+    connection: {
+      host: DATABASE_HOST,
+      port: DATABASE_PORT,
+      user: DATABASE_USERNAME,
+      password: DATABASE_PASSWORD,
+      insecureAuth: isDevelopment,
+    },
+    debug: isDevelopment,
+    log: {
+      debug: getKnexLogger(logger, 'debug'),
+      error: getKnexLogger(logger, 'error'),
+      warn: getKnexLogger(logger, 'warn'),
+      deprecate: (method, alternative) => logger.warn('Knex reported something deprecated', {
+        method,
+        alternative,
+      }),
+    },
+    migrations: {
+      tableName: 'knex_meta',
+      directory: join('src', 'data', 'migrations'),
+    },
+    seeds: {
+      directory: join('src', 'data', 'seeds'),
+    },
+  };
 
-async function shutdownData(){
-    const logger = getChildLogger('database');
+  knexInstance = knex(knexOptions);
 
-    logger.info('Shutting down database connection');
+  try {
+    await knexInstance.raw('SELECT 1+1 AS result');
+    await knexInstance.raw(`CREATE DATABASE IF NOT EXISTS ${DATABASE_NAME}`);
 
-    await sequelize.close();
+    await knexInstance.destroy();
 
-    logger.info('Database connection closed');
+    knexOptions.connection.database = DATABASE_NAME;
+    knexInstance = knex(knexOptions);
+    await knexInstance.raw('SELECT 1+1 AS result');
+  } catch (error) {
+    logger.error(error.message, { error });
+    throw new Error('Could not initialize the data layer');
+  }
+
+  let migrationsFailed = true;
+  try {
+    await knexInstance.migrate.latest();
+    migrationsFailed = false;
+  } catch (error) {
+    logger.error('Error while migrating the database', {
+      error,
+    });
+  }
+
+  if (migrationsFailed) {
+    try {
+      await knexInstance.migrate.down();
+    } catch (error) {
+      logger.error('Error while undoing last migration', {
+        error,
+      });
+    }
+    throw new Error('Migrations failed');
+  }
+
+  if (isDevelopment) {
+    try {
+      await knexInstance.seed.run();
+    } catch (error) {
+      logger.error('Error while seeding database', {
+        error,
+      });
+    }
+  }
+
+  logger.info('Succesfully connected to the database');
+
+  return knexInstance;
 }
+
+async function shutdownData() {
+    const logger = getChildLogger('database');
+  
+    logger.info('Shutting down database connection');
+  
+    await knexInstance.destroy();
+    knexInstance = null;
+  
+    logger.info('Database connection closed');
+  }
+
+function getKnex() {
+	if (!knexInstance) throw new Error('Please initialize the data layer before getting the Knex instance');
+	return knexInstance;
+}
+
+const tables = Object.freeze({
+	department: 'departments',
+    user: 'users',
+    doctor: 'doctors',
+    //consultation: 'consultations',	
+});
 
 module.exports = {
     initializeData,
+    tables,
+    getKnex,
     shutdownData
 };

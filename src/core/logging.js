@@ -1,22 +1,22 @@
 const winston = require('winston');
-const rest = require('../rest');
-const {combine, timestamp, colorize, printf, json} = winston.format;
+const {
+  combine, timestamp, colorize, printf, json,
+} = winston.format;
 
 let logger;
 
 const devFormat = () => {
   const formatMessage = ({
-    level, message, timestamp, name = 'server', ... rest
+    level, message, timestamp, name = 'server', ...rest
   }) => `${timestamp} | ${name} | ${level} | ${message} | ${JSON.stringify(rest)}`;
 
   const formatError = ({
-    error: {stack}, ...rest
+    error: { stack }, ...rest
   }) => `${formatMessage(rest)}\n\n${stack}\n`;
   const format = (info) => info.error instanceof Error ? formatError(info) : formatMessage(info);
   return combine(
-    colorize(), timestamp(), printf(format)
+    colorize(), timestamp(), printf(format),
   );
-
 };
 
 const prodFormat = () => {
@@ -26,7 +26,7 @@ const prodFormat = () => {
 };
 
 const getLogger = () => {
-  if(!logger) throw new Error('You must first initialize the logger');
+  if (!logger) throw new Error('You must first initialize the logger');
   return logger;
 };
 
@@ -35,18 +35,18 @@ const getChildLogger = (name, meta = {}) => {
   const previousName = logger.defaultMeta?.name;
 
   return logger.child({
-    name : previousName ? `${previousName}.${name}` : name,
+    name: previousName ? `${previousName}.${name}` : name,
     previousName,
-    ...meta
+    ...meta,
   });
 };
 
-const initializeLogger = ({
+ const initializeLogger = ({
   level,
   disabled,
   isProduction,
   defaultMeta = {},
-  extraTransports = []
+  extraTransports = [],
 }) => {
   logger = winston.createLogger({
     level,
@@ -54,16 +54,17 @@ const initializeLogger = ({
     format: isProduction ? prodFormat() : devFormat(),
     transports: [
       new winston.transports.Console({
-        silent: disabled
+        silent: disabled,
       }),
-      ...extraTransports
+      ...extraTransports,
     ]
   });
-  logger.info(`Logger initialized with minimum log level ${level}`);
+
+  logger.info(` Logger initialized with minimum log level ${level}`);
 };
 
 module.exports = {
   getLogger,
   getChildLogger,
-  initializeLogger
+  initializeLogger,
 };

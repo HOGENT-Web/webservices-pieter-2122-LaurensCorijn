@@ -1,17 +1,25 @@
 const uuid = require('uuid');
 const { getChildLogger } = require('../core/logging');
-let {DEPARTMENTS} = require('../data/mock_data');
+//let {DEPARTMENTS} = require('../data/mock_data');
+const departmentRepository = require('../repository/department');
 
 
 const debugLog = (message, meta = {}) => {
   if(!this.logger)this.logger = getChildLogger('department-service');
   this.logger.debug(message, meta);
-};
+};	
 
-const getAll = () => {
-  debugLog('Fetching all departments');
-	return { data: DEPARTMENTS , count: DEPARTMENTS.length };
-}	
+const getAll = async (
+	limit = 100,
+	offset = 0,
+) => {
+	const data = await departmentRepository.findAll({ limit, offset });
+	return {
+		data,
+		limit,
+		offset
+	};
+};
 
 const getById = (id) => {
   debugLog(`Fetching department with id ${id}`);
