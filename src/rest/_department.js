@@ -10,15 +10,15 @@ const getDepartmentById = async (ctx) => {
 };
 
 const createDepartment = async (ctx) => {
-    const newDepartment = departmentService.create(ctx.request.body);
+    const newDepartment = await departmentService.create(ctx.request.body);
 };
 
 const updateDepartment = async (ctx) => {
-    ctx.body = departmentService.updateById(ctx.params.id,ctx.request.body);
+    ctx.body = await departmentService.updateById(ctx.params.id,ctx.request.body);
 };
 
 const deleteDepartment = async (ctx) => {
-    departmentService.deleteById(ctx.params.id);
+    await departmentService.deleteById(ctx.params.id);
     ctx.status = 204;
 };
 
