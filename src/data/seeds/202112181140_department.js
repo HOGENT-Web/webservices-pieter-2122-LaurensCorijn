@@ -171,7 +171,7 @@ module.exports = {
           {
             id :  '7f28c5f9-d711-4cd6-ac15-d13d71abff28',
             name : 'Nucleaire geneeskunde',
-            locacion : 'straat 19',
+            location : 'straat 19',
             hospital : 'AZ Sint-Lucas Gent'
           },
           {

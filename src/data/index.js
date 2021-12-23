@@ -129,9 +129,9 @@ function getKnex() {
 
 const tables = Object.freeze({
 	department: 'departments',
-    user: 'users',
-    doctor: 'doctors',
-    consultation: 'consultations',	
+  user: 'users',
+  doctor: 'doctors',
+  consultation: 'consultations',	
 });
 
 module.exports = {
