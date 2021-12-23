@@ -11,6 +11,8 @@ const getDepartmentById = async (ctx) => {
 
 const createDepartment = async (ctx) => {
     const newDepartment = await departmentService.create(ctx.request.body);
+    ctx.body = newDepartment;
+    ctx.status = 201;
 };
 
 const updateDepartment = async (ctx) => {
