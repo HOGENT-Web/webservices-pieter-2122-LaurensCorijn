@@ -131,7 +131,7 @@ const tables = Object.freeze({
 	department: 'departments',
     user: 'users',
     doctor: 'doctors',
-    //consultation: 'consultations',	
+    consultation: 'consultations',	
 });
 
 module.exports = {
