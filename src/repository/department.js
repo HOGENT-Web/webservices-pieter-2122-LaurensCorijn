@@ -10,7 +10,7 @@ const findAll = ({
         .select()
         .limit(limit)
         .offset(offset)
-        .orderBy('name','ASC');
+        .orderBy('id','ASC');
 };
 
 const findById = (id) => {
