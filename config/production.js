@@ -14,5 +14,9 @@ module.exports = {
 		username: 'root',
 		password: '',
 	},
+  pagination: {
+    limit: 100,
+    offset: 0,
+  },
 }
 ;
