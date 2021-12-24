@@ -33,20 +33,20 @@ const getById = async (id) => {
   return consultation;
 }
 
-const create = async ({ startingTime, endTime, userId, doctorId}) => {
-  debugLog('Creating new consultation', {startingTime, endTime, userId, doctorId});
+const create = async ({ startingtime, endtime, userId, doctorId}) => {
+  debugLog('Creating new consultation', {startingtime, endtime, userId, doctorId});
 
   return consultationRepository.create({
-    startingTime, endTime, userId, doctorId
+    startingtime, endtime, userId, doctorId
   });
 };
 
-const updateById = async (id, {startingTime, endTime, userId, doctorId}) => {
+const updateById = async (id, {startingtime, endtime, userId, doctorId}) => {
   debugLog(`Updating consultation with id ${id}`, {
-    startingTime, endTime, userId, doctorId
+    startingtime, endtime, userId, doctorId
   });
 
-  return consultationRepository.updateById(id, {startingTime, endTime, userId, doctorId});
+  return consultationRepository.updateById(id, {startingtime, endtime, userId, doctorId});
 };
 
 const deleteById = async (id) => {

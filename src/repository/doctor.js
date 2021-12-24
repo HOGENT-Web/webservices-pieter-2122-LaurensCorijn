@@ -42,8 +42,8 @@ const findById = async (id) => {
 };
 
 const create = async ({
-    firstName,
-    lastName,
+    firstname,
+    lastname,
     departmentId
 }) => {
     try{
@@ -51,8 +51,8 @@ const create = async ({
         await getKnex()(tables.doctor)
             .insert({
                 id,
-                firstName,
-                lastName,
+                firstname,
+                lastname,
                 department_id: departmentId,
             });
         return await findById(id);    
@@ -66,15 +66,15 @@ const create = async ({
 };
 
   const updateById = async(id, {
-      firstName,
-      lastName,
+      firstname,
+      lastname,
       departmentId,
   }) => {
       try{
           await getKnex()(tables.doctor)
             .update({
-                firstName,
-                lastName,
+                firstname,
+                lastname,
                 department_id: departmentId,
             })
             .where(`${tables.doctor}.id`,id);

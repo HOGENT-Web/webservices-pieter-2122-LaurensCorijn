@@ -1,6 +1,13 @@
 const Router = require('@koa/router');
 const healthService = require('../service/health');
 
+/**
+ * @swagger
+ * tags:
+ *   name: Health
+ *   description: Shows status of API
+ */
+
 const ping = async (ctx) => {
     ctx.body = healthService.ping();
 };

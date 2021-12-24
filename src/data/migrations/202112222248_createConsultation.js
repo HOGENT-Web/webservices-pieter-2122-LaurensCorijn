@@ -6,10 +6,10 @@ module.exports = {
             table.uuid('id')
                 .primary();
        
-            table.dateTime('startingTime')
+            table.dateTime('startingtime')
                 .notNullable();
 
-            table.dateTime('endTime')
+            table.dateTime('endtime')
                 .notNullable(); 
             
             table.uuid('doctor_id')

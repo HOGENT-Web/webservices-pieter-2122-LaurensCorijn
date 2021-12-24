@@ -3,16 +3,17 @@ const { tables, getKnex } = require('../data/index');
 const { getChildLogger } = require('../core/logging');
 
 const SELECT_COLUMNS = [
-    `${tables.consultation}`, 'startingTime', 'endTime',
+    `${tables.consultation}.id`, 'startingtime', 'endtime',
     `${tables.user}.id as user_id`, `${tables.doctor}.id as doctor_id`
 ];
 
-const formatConsultation = ({ user_id, user_firstName, user_lastName, doctor_id, doctor_firstName, doctor_lastName, doctor_department_id, ...rest }) => ({
+const formatConsultation = ({ user_id, user_firstName, user_lastName,user_email ,doctor_id, doctor_firstName, doctor_lastName, doctor_department_id, ...rest }) => ({
     ...rest,
     user: {
         id: user_id,
         firstName: user_firstName,
         lastName: user_lastName,
+        email: user_email,
     },
     doctor: {
         id: doctor_id,
@@ -32,7 +33,7 @@ const findAll = async({
         .join(tables.doctor, `${tables.consultation}.doctor_id`,'=',`${tables.doctor}.id`)
         .limit(limit)
         .offset(offset)
-        .orderBy('startingTime','ASC');
+        .orderBy('startingtime','ASC');
     return consultations.map(formatConsultation);    
 };
 
@@ -46,8 +47,8 @@ const findById = async (id) => {
 };
 
 const create = async({
-    firstName,
-    lastName,
+    startingtime,
+    endtime,
     userId,
     doctorId,
 }) => {
@@ -56,8 +57,8 @@ const create = async({
         await getKnex()(tables.consultation)
             .insert({
                 id,
-                firstName,
-                lastName,
+                startingtime,
+                endtime,
                 user_id: userId,
                 doctor_id: doctorId
             });
@@ -73,16 +74,16 @@ const create = async({
 };
 
 const updateById = async(id, {
-    firstName,
-    lastName,
+    startingtime,
+    endtime,
     userId,
     doctorId,
 }) => {
     try{
         await getKnex()(tables.consultation)
             .update({
-                firstName,
-                lastName,
+                startingtime,
+                endtime,
                 user_id: userId,
                 doctor_id: doctorId
             })

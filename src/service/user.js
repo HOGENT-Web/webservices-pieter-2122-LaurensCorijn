@@ -2,7 +2,7 @@ const config = require('config');
 const { getChildLogger } = require('../core/logging');
 const userRepository = require('../repository/user');
 const { verifyPassword, hashPassword } = require('../core/password');
-const { generateJWT } = require('../core/jwt');
+const { generateJWT, verifyJWT } = require('../core/jwt');
 const Role = require('../core/roles');
 
 const DEFAULT_PAGINATION_LIMIT = config.get('pagination.limit');
@@ -19,10 +19,8 @@ const getAll = async (
 ) => {
     debugLog('Fetching all users', {limit, offset});
     const data = await userRepository.findAll({limit, offset});
-    const totalCount = await data.count();
     return {
         data,
-        count: totalCount,
         limit,
         offset
     };
@@ -38,9 +36,10 @@ const getById = async (id) => {
     return user;
 };
 
-const updateById = (id, { firstName, lastName}) => {
-    debugLog(`Updating user with id ${id}`, {firstName, lastName});
-    return userRepository.updateById(id, {firstname, lastname});
+const updateById = async (id, { firstname, lastname}) => {
+    debugLog(`Updating user with id ${id}`, {firstname, lastname});
+    const user = await userRepository.updateById(id, {firstname, lastname});
+    return makeExposedUser(user);
 };
 
 const deleteById = async (id) => {
@@ -53,15 +52,17 @@ const deleteById = async (id) => {
 };
 
 const register = async ({
-    name,
+    firstname,
+    lastname,
     email,
     password,
   }) => {
-    debugLog('Creating a new user', { name });
+    debugLog('Creating a new user', { firstname });
     const passwordHash = await hashPassword(password);
   
     const user = await userRepository.create({
-      name,
+      firstname,
+      lastname,
       email,
       passwordHash,
       roles: [Role.USER],

@@ -34,16 +34,16 @@ const getById = async (id) => {
   return doctor;
 };
 
-const create = async({ firstName, lastName, departmentId}) => {
-  debugLog('Creating new doctor', {firstName, lastName, departmentId});
-  return doctorRepository.create({firstName, lastName, departmentId});
+const create = async({ firstname, lastname, departmentId}) => {
+  debugLog('Creating new doctor', {firstname, lastname, departmentId});
+  return doctorRepository.create({firstname, lastname, departmentId});
 };
 
-const updateById = async (id, {firstName, lastName, departmentId}) => {
+const updateById = async (id, {firstname, lastname, departmentId}) => {
   debugLog(`Updating doctor with id ${id}`,{
-    firstName, lastName, departmentId
+    firstname, lastname, departmentId
   });
-  return doctorRepository.updateById(id, {firstName, lastName, departmentId});
+  return doctorRepository.updateById(id, {firstname, lastname, departmentId});
 };
 
 const deleteById = async (id) => {

@@ -12,15 +12,15 @@ module.exports = {
         firstname: 'Piere',
         lastname: 'Geens',
         email: 'piere.geens@email.be',
-        password_hash: '$argon2id$v=19$m=131072,t=6,p=1$9AMcua9h7va8aUQSEgH/TA$TUFuJ6VPngyGThMBVo3ONOZ5xYfee9J1eNMcA5bSpq4',
-        roles: JSON.stringify([Role.USER]),
+        password_hash: '$argon2id$v=19$m=131072,t=6,p=1$2LxTVuvUFFK4NQQqJLCi5A$mNymmW6LoYAcI8crgoFfqDAREy9YgdqqsTLqMZqnwsQ',
+        roles: JSON.stringify([Role.USER, Role.ADMIN]),
       },
       {
         id: '7f28c5f9-d711-4cd6-ac15-d13d71abff01',
         firstname: 'Piet',
         lastname: 'Pieters',
         email: 'piet.pieters@email.be',
-        password_hash: '$argon2id$v=19$m=131072,t=6,p=1$9AMcua9h7va8aUQSEgH/TA$TUFuJ6VPngyGThMBVo3ONOZ5xYfee9J1eNMcA5bSpq4',
+        password_hash: '$argon2id$v=19$m=131072,t=6,p=1$e5j5lXqlP10i5ItCmnQy2Q$GTAYnyyicyiKi5A06EiCd6XcWgaGOUR/MD8udjaskSE',
         roles: JSON.stringify([Role.USER]),
       },
       {
