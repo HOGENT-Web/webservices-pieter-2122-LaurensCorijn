@@ -187,10 +187,10 @@ updateDepartment.validationScheme = {
       id: Joi.string().uuid(),
     },
     body: {
-        name: Joi.string(),
-        location: Joi.string(),
-        hospital: Joi.string(),
-    },
+        name: Joi.string().max(255),
+        location: Joi.string().max(255),
+        hospital: Joi.string().max(255),
+    }
   };
 
 /**
@@ -216,7 +216,7 @@ deleteDepartment.validationScheme = {
     params: {
       id: Joi.string().uuid(),
     },
-  }
+  };
 
 module.exports = (app) => {
     const router = new Router({

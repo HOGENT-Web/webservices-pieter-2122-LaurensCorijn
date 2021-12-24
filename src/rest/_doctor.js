@@ -3,6 +3,7 @@ const doctorService = require('../service/doctor');
 const { requireAuthentication, makeRequireRole } = require('../core/auth');
 const Role = require('../core/roles');
 const Joi = require('joi');
+const validate = require('./_validation');
 
 /**
  * @swagger
@@ -118,6 +119,11 @@ getAllDoctors.validationScheme = {
 const getDoctorById = async (ctx) => {
     ctx.body = await doctorService.getById(ctx.params.id);
 };
+getDoctorById.validationScheme = {
+    params: {
+      id: Joi.string().uuid(),
+    },
+  };
 
 /**
  * @swagger
@@ -144,6 +150,13 @@ const createDoctor = async (ctx) => {
     ctx.body = newDoctor;
     ctx.status = 201;
 };
+createDoctor.validationScheme = {
+    body: {
+      firstname: Joi.string().max(255),
+      lastname: Joi.string().max(255),
+      departmentId: Joi.string().uuid(),
+    },
+  };
 
 /**
  * @swagger
@@ -171,6 +184,16 @@ const updateDoctor = async (ctx) => {
     ctx.body = await doctorService.updateById(ctx.params.id,ctx.request.body);
     ctx.status = 201;
 };
+updateDoctor.validationScheme = {
+    params: {
+      id: Joi.string().uuid(),
+    },
+    body: {
+        firstname: Joi.string().max(255),
+        lastname: Joi.string().max(255),
+        departmentId: Joi.string().uuid(),
+    }
+  };
 
 
 /**
@@ -192,6 +215,11 @@ const deleteDoctor = async (ctx) => {
     await doctorService.deleteById(ctx.params.id);
     ctx.status = 204;
 };
+deleteDoctor.validationScheme = {
+    params: {
+      id: Joi.string().uuid(),
+    },
+  };
 
 module.exports = (app) => {
     const router = new Router({
@@ -200,11 +228,11 @@ module.exports = (app) => {
 
     const requireAdmin = makeRequireRole(Role.ADMIN);
 
-    router.get('/',getAllDoctors);
-    router.get('/:id',getDoctorById);
-    router.post('/',requireAuthentication,requireAdmin,createDoctor);
-    router.put('/:id',requireAuthentication,requireAdmin,updateDoctor);
-    router.delete('/:id',requireAuthentication,requireAdmin,deleteDoctor);
+    router.get('/',validate(getAllDoctors.validationScheme),getAllDoctors);
+    router.get('/:id',validate(getDoctorById.validationScheme),getDoctorById);
+    router.post('/',requireAuthentication,requireAdmin,validate(createDoctor.validationScheme),createDoctor);
+    router.put('/:id',requireAuthentication,requireAdmin,validate(updateDoctor.validationScheme),updateDoctor);
+    router.delete('/:id',requireAuthentication,requireAdmin,validate(deleteDoctor.validationScheme),deleteDoctor);
 
     app.use(router.routes()).use(router.allowedMethods());
 }

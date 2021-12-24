@@ -2,6 +2,7 @@ const Router = require('@koa/router');
 const consultationService = require('../service/consultation');
 const { requireAuthentication, makeRequireRole } = require('../core/auth');
 const Joi = require('joi');
+const validate = require('./_validation');
 
 /**
  * @swagger
@@ -135,6 +136,11 @@ getAllConsultations.validationScheme = {
 const getConsultationById = async (ctx) => {
     ctx.body = await consultationService.getById(ctx.params.id);
 };
+getConsultationById.validationScheme = {
+    params: {
+      id: Joi.string().uuid(),
+    },
+  };
 
 /**
  * @swagger
@@ -160,6 +166,14 @@ const createConsultation = async (ctx) => {
     const newConsultation = await consultationService.create(ctx.request.body);
     ctx.body = newConsultation;
     ctx.status = 201;
+};
+createConsultation.validationScheme = {
+	body: {
+        startingtime: Joi.date().iso().greater('now'),
+        endtime: Joi.date().iso().greater(Joi.ref('startingtime')),
+        userId: Joi.string().uuid(),
+        doctorId: Joi.string().uuid()
+  },
 };
 
 
@@ -189,6 +203,17 @@ const updateConsultation = async (ctx) => {
     ctx.body = await consultationService.updateById(ctx.params.id,ctx.request.body);
     ctx.status = 201;
 };
+updateConsultation.validationScheme = {
+    params: {
+      id: Joi.string().uuid(),
+    },
+    body: {
+        startingtime: Joi.date().iso().greater('now'),
+        endtime: Joi.date().iso().greater(Joi.ref('startingtime')),
+        userId: Joi.string().uuid(),
+        doctorId: Joi.string().uuid()
+    }
+  };
 
 /**
  * @swagger
@@ -209,17 +234,22 @@ const deleteConsultation = async (ctx) => {
     await consultationService.deleteById(ctx.params.id);
     ctx.status = 204;
 };
+deleteConsultation.validationScheme = {
+    params: {
+      id: Joi.string().uuid(),
+    },
+  };
 
 module.exports = (app) => {
     const router = new Router({
         prefix: '/consultations',
     });
 
-    router.get('/',requireAuthentication,getAllConsultations);
-    router.get('/:id',requireAuthentication,getConsultationById);
-    router.post('/', requireAuthentication,createConsultation);
-    router.put('/:id',requireAuthentication,updateConsultation);
-    router.delete('/:id',requireAuthentication,deleteConsultation);
+    router.get('/',requireAuthentication,validate(getAllConsultations.validationScheme),getAllConsultations);
+    router.get('/:id',requireAuthentication,validate(getConsultationById.validationScheme),getConsultationById);
+    router.post('/', requireAuthentication,validate(createConsultation.validationScheme),createConsultation);
+    router.put('/:id',requireAuthentication,validate(updateConsultation.validationScheme),updateConsultation);
+    router.delete('/:id',requireAuthentication,validate(deleteConsultation.validationScheme),deleteConsultation);
 
     app.use(router.routes()).use(router.allowedMethods());
 };

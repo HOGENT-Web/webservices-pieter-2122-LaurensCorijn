@@ -3,6 +3,7 @@ const userService = require('../service/user');
 const { requireAuthentication, makeRequireRole } = require('../core/auth');
 const Role = require('../core/roles');
 const Joi = require('joi');
+const validate = require('./_validation');
 
 /**
  * @swagger
@@ -126,7 +127,6 @@ getAllUsers.validationScheme = {
 		offset: Joi.number().min(0).optional(),
 	}).and('limit', 'offset'),
  };
-
 /**
  * @swagger
  * /api/users/{id}:
@@ -150,6 +150,11 @@ const getUserById = async(ctx) => {
     const user = await userService.getById(ctx.params.id);
     ctx.body = user;
 };
+getUserById.validationScheme = {
+    params: {
+      id: Joi.string().uuid(),
+    },
+  };
 
 /**
  * @swagger
@@ -177,7 +182,17 @@ const updateUserById = async (ctx) => {
     const user = await userService.updateById(ctx.params.id,ctx.request.body);
     ctx.body = user;
     ctx.status = 201;
-}
+};
+updateUserById.validationScheme = {
+    params: {
+      id: Joi.string().uuid(),
+    },
+    body: {
+      fistname: Joi.string().max(255),  
+      lastname: Joi.string().max(255),
+      email: Joi.string().email(),
+    },
+  };
 
 /**
  * @swagger
@@ -198,6 +213,11 @@ const deleteUserById = async (ctx) => {
     await userService.deleteById(ctx.params.id);
     ctx.status = 204;
 };
+deleteUserById.validationScheme = {
+    params: {
+      id: Joi.string().uuid(),
+    },
+  };
 
 /**
  * @swagger
@@ -223,7 +243,13 @@ const login = async (ctx) => {
     const {email, password} = ctx.request.body;
     const session = await userService.login(email,password);
     ctx.body = session;
-}
+};
+login.validationScheme = {
+    body: {
+      email: Joi.string().email(),
+      password: Joi.string(),
+    },
+  };
 
 /**
  * @swagger
@@ -249,6 +275,14 @@ const register = async (ctx) => {
 	const session = await userService.register(ctx.request.body);
 	ctx.body = session;
 };
+register.validationScheme = {
+    body: {
+      firstname: Joi.string().max(255),  
+      lastname: Joi.string().max(255),
+      email: Joi.string().email(),
+      password: Joi.string().min(8).max(30),
+    },
+  };
 
 module.exports = function installUsersRoutes(app) {
     const router = new Router({
@@ -257,12 +291,12 @@ module.exports = function installUsersRoutes(app) {
 
     const requireAdmin = makeRequireRole(Role.ADMIN);
 
-    router.get('/', requireAuthentication, requireAdmin, getAllUsers);
-    router.get('/:id', requireAuthentication,getUserById);
-    router.put('/:id', requireAuthentication,updateUserById);
-    router.delete('/:id', requireAuthentication, deleteUserById);
-    router.post('/login', login);
-    router.post('/register', register);
+    router.get('/', requireAuthentication, requireAdmin,validate(getAllUsers.validationScheme), getAllUsers);
+    router.get('/:id', requireAuthentication,validate(getUserById.validationScheme),getUserById);
+    router.put('/:id', requireAuthentication,validate(updateUserById.validationScheme),updateUserById);
+    router.delete('/:id', requireAuthentication,validate(deleteUserById.validationScheme), deleteUserById);
+    router.post('/login', validate(login.validationScheme),login);
+    router.post('/register',validate(register.validationScheme), register);
     
     app.use(router.routes())
         .use(router.allowedMethods());
