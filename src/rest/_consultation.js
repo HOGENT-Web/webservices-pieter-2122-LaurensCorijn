@@ -1,6 +1,7 @@
 const Router = require('@koa/router');
 const consultationService = require('../service/consultation');
 const { requireAuthentication, makeRequireRole } = require('../core/auth');
+const Joi = require('joi');
 
 /**
  * @swagger
@@ -103,9 +104,14 @@ const getAllConsultations = async (ctx) => {
     const limit = ctx.query.limit && Number(ctx.query.limit);
     const offset = ctx.query.offset && Number(ctx.query.offset);
     console.log('test');
-    ctx.body = await consultationService.getAll(limit, offset);
-    
+    ctx.body = await consultationService.getAll(limit, offset);    
 };
+getAllConsultations.validationScheme = {
+	query: Joi.object({
+		limit: Joi.number().integer().positive().max(1000).optional(),
+		offset: Joi.number().min(0).optional(),
+	}).and('limit', 'offset'),
+ };
 
 /**
  * @swagger

@@ -1,5 +1,5 @@
 const {  tables  } = require('../../src/data');
-const { withServer , login} = require('../supertest.setup');
+const { withServer , loginAdmin} = require('../supertest.setup');
 
 const data = {
     departments: [{
@@ -48,7 +48,7 @@ describe('Departments', ()=>{
       });
 
 	beforeAll(async () => {
-		loginHeader = await login(request);
+		loginHeader = await loginAdmin(request);
 	});
 
 	const url = '/api/departments';
@@ -148,7 +148,7 @@ describe('PUT /api/departments/:id', () => {
                 location : 'straat',
                 hospital: 'AZ Gent'
             });
-        expect(response.status).toBe(200);
+        expect(response.status).toBe(201);
         expect(response.body.id).toBeTruthy();
         expect(response.body.name).toBe('heelkunde');
         expect(response.body.location).toBe('straat');

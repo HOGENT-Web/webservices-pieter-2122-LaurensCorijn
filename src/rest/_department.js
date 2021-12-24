@@ -2,6 +2,7 @@ const Router = require('@koa/router');
 const departmentService = require('../service/department');
 const { requireAuthentication, makeRequireRole } = require('../core/auth');
 const Role = require('../core/roles');
+const Joi = require('joi');
 
 /**
  * @swagger
@@ -88,6 +89,12 @@ const getAllDepartments = async (ctx) => {
     const offset =  ctx.query.offset && Number(ctx.query.offset);
     ctx.body = await departmentService.getAll(limit, offset);
 };
+getAllDepartments.validationScheme = {
+	query: Joi.object({
+		limit: Joi.number().integer().positive().max(1000).optional(),
+		offset: Joi.number().min(0).optional(),
+	}).and('limit', 'offset'),
+ };
 
 /**
  * @swagger

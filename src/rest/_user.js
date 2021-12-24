@@ -2,6 +2,7 @@ const Router = require('@koa/router');
 const userService = require('../service/user');
 const { requireAuthentication, makeRequireRole } = require('../core/auth');
 const Role = require('../core/roles');
+const Joi = require('joi');
 
 /**
  * @swagger
@@ -119,6 +120,12 @@ const getAllUsers = async(ctx) => {
     );
     ctx.body = users;
 };
+getAllUsers.validationScheme = {
+	query: Joi.object({
+		limit: Joi.number().integer().positive().max(1000).optional(),
+		offset: Joi.number().min(0).optional(),
+	}).and('limit', 'offset'),
+ };
 
 /**
  * @swagger

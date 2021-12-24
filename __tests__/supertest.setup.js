@@ -38,7 +38,7 @@ const loginAdmin = async (supertest) => {
       password: '12345678',
     });
 
-  if (response.statusCode !== 201) {
+  if (response.statusCode !== 200) {
     throw new Error(response.body.message || 'Unknown error occured');
   }
 
