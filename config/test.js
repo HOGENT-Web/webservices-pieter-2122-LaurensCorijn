@@ -13,7 +13,7 @@ module.exports = {
 		port: 3306,
 		name: 'api_test',
 		username: 'root',
-		password: 'Rfjc1158',
+		password: '',
   	},
 	pagination: {
 		limit: 100,

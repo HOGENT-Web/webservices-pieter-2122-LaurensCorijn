@@ -24,6 +24,17 @@ const deleteUserById = async (ctx) => {
     ctx.status = 204;
 };
 
+const login = async (ctx) => {
+    const {email, password} = ctx.request.body;
+    const session = await userService.login(email,password);
+    ctx.body = session;
+}
+
+const register = async (ctx) => {
+	const session = await userService.register(ctx.request.body);
+	ctx.body = session;
+};
+
 module.exports = function installUsersRoutes(app) {
     const router = new Router({
         prefix: '/users',
@@ -33,6 +44,8 @@ module.exports = function installUsersRoutes(app) {
     router.get('/:id',getUserById);
     router.put('/:id', updateUserById);
     router.delete('/:id', deleteUserById);
+    router.post('/login', login);
+    router.post('/register', register);
     
     app.use(router.routes())
         .use(router.allowedMethods());

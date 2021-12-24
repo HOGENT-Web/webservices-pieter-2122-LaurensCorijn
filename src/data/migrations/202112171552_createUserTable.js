@@ -9,7 +9,7 @@ module.exports = {
       table.string('firstname', 255)
         .notNullable();
       table.string('lastname',255)
-        .notNullable();  
+        .notNullable(); 
     });
   },
   down: (knex) => {

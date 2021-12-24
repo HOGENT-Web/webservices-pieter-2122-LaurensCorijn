@@ -22,6 +22,8 @@ const findById = (id) => {
 const create = async({
     firstname,
     lastname,
+    email,
+    passwordHash
 }) => {
     try{
         const id = uuid.v4();
@@ -30,6 +32,8 @@ const create = async({
             id,
             firstname,
             lastname,
+            email,
+            password_hash: passwordHash
         });
         return await findById(id);
     }catch(error){
@@ -77,10 +81,17 @@ const deleteById = async(id) => {
     }
 }
 
+const findByEmail = (email) => {
+    return getKnex()(tables.user)
+      .where('email', email)
+      .first();
+  };
+
 module.exports = {
     findAll,
     findById,
     create,
     updateById,
     deleteById,
+    findByEmail,
 }

@@ -1,6 +1,8 @@
 const config = require('config');
 const { getChildLogger } = require('../core/logging');
 const userRepository = require('../repository/user');
+const { verifyPassword, hashPassword } = require('../core/password');
+const { generateJWT } = require('../core/jwt');
 
 const DEFAULT_PAGINATION_LIMIT = config.get('pagination.limit');
 const DEFAULT_PAGINATION_OFFSET = config.get('pagination.offset');
@@ -35,12 +37,6 @@ const getById = async (id) => {
     return user;
 };
 
-const create = ({ firstName, lastName }) =>{
-    const newUser = {firstName, lastName};
-    debugLog('Creating new user', newUser);
-    return userRepository.create(newUser);
-};
-
 const updateById = (id, { firstName, lastName}) => {
     debugLog(`Updating user with id ${id}`, {firstName, lastName});
     return userRepository.updateById(id, {firstname, lastname});
@@ -55,10 +51,69 @@ const deleteById = async (id) => {
     }
 };
 
+const register = async ({
+    name,
+    email,
+    password,
+  }) => {
+    debugLog('Creating a new user', { name });
+    const passwordHash = await hashPassword(password);
+  
+    const user = await userRepository.create({
+      name,
+      email,
+      passwordHash,
+    });
+  
+    return await makeLoginData(user);
+  };
+
+  const makeLoginData = async (user) => {
+    const token = await generateJWT(user);
+  
+    return {
+      user: makeExposedUser(user),
+      token,
+    };
+  }; 
+
+  const makeExposedUser = ({
+    id, firstname, lastname, email,
+  }) => ({
+    id, firstname, lastname, email,
+  });
+
+  const makeLoginData = async (user) => {
+    const token = await generateJWT(user);
+  
+    return {
+      user: makeExposedUser(user),
+      token,
+    };
+  };
+
+  const login = async (email, password) => {
+    const user = await userRepository.findByEmail(email);
+  
+    if (!user) {
+      throw ServiceError.unauthorized('The given email and password do not match');
+    }
+  
+    const passwordValid = await verifyPassword(password, user.password_hash);
+  
+    if (!passwordValid) {
+      throw ServiceError.unauthorized('The given email and password do not match');
+    }
+  
+    return await makeLoginData(user);
+  };
+
+
 module.exports = {
     getAll,
     getById,
-    create,
     updateById,
     deleteById,
+    register,
+    login
 }
