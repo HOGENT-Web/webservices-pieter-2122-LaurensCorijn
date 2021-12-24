@@ -26,14 +26,8 @@
   },
   "scripts": {
     "start": "npx env-cmd nodemon src/index.js",
-    "test": "npx env-cmd -f .env.test jest"
-  },
-  "jest": {
-    "testPathIgnorePatterns": [
-      "src",
-      "node_modules",
-      "config"
-    ]
+    "test": "npx env-cmd -f .env.test jest",
+    "test:coverage": "npx env-cmd -f .env.test jest --coverage"
   },
   "author": "",
   "license": "ISC"

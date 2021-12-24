@@ -4,6 +4,7 @@ const userRepository = require('../repository/user');
 const { verifyPassword, hashPassword } = require('../core/password');
 const { generateJWT, verifyJWT } = require('../core/jwt');
 const Role = require('../core/roles');
+const ServiceError = require('../core/serviceError');
 
 const DEFAULT_PAGINATION_LIMIT = config.get('pagination.limit');
 const DEFAULT_PAGINATION_OFFSET = config.get('pagination.offset');
@@ -89,13 +90,13 @@ const register = async ({
 
   const login = async (email, password) => {
     const user = await userRepository.findByEmail(email);
-  
+
     if (!user) {
       throw ServiceError.unauthorized('The given email and password do not match');
     }
-  
+
     const passwordValid = await verifyPassword(password, user.password_hash);
-  
+
     if (!passwordValid) {
       throw ServiceError.unauthorized('The given email and password do not match');
     }

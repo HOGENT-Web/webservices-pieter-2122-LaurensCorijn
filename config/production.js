@@ -8,15 +8,24 @@ module.exports = {
     maxAge: 3 * 60 * 60,
   },database: {
 		client: 'mysql2',
-		host: 'localhost',
-		port: 3306,
 		name: 'api',
-		username: 'root',
-		password: '',
 	},
   pagination: {
     limit: 100,
     offset: 0,
   },
+  auth: {
+		argon: {
+		  saltLength: 16,
+		  hashLength: 32,
+		  timeCost: 6,
+		  memoryCost: 2 ** 17,
+		},
+		jwt: {
+			expirationInterval: 60 * 60 * 1000,
+			issuer: 'api.hogent.be',
+			audience: 'api.hogent.be',
+		  },
+    }
 }
 ;

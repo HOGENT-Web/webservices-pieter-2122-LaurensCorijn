@@ -4,7 +4,7 @@ const {
 } = require('./core/password');
 
 async function main() {
-	const password = "wachtwoordPiet";
+	const password = "wachtwoordUserTest";
 	const wrongPassword = "verywrong";
 	console.log('The password:', password);
 

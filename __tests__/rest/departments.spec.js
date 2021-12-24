@@ -1,6 +1,5 @@
-const supertest = require('supertest');
-const createServer = require('../../src/createServer');
-const { getKnex, tables  } = require('../../src/data');
+const {  tables  } = require('../../src/data');
+const { withServer , login} = require('../supertest.setup');
 
 const data = {
     departments: [{
@@ -38,19 +37,18 @@ const data = {
 	]
 }
 
-describe('departments', ()=>{
-	let server;
+describe('Departments', ()=>{
 	let request;
 	let knex;
+    let loginHeader;
+
+    withServer(({ knex: k, supertest:s }) => {
+        knex = k;
+        request = s;
+      });
 
 	beforeAll(async () => {
-		server = await createServer();
-		request = supertest(server.getApp().callback());
-		knex = getKnex();
-	});
-
-    afterAll(async () => {
-		await server.stop();
+		loginHeader = await login(request);
 	});
 
 	const url = '/api/departments';
@@ -67,7 +65,7 @@ describe('departments', ()=>{
         });
 
         test('it should 200 and return all departments', async () => {
-            const response = await request.get(url);
+            const response = await request.get(url)
             expect(response.status).toBe(200);
             expect(response.body.limit).toBe(100);
             expect(response.body.offset).toBe(0);
@@ -111,7 +109,7 @@ describe('POST /api/departments', () => {
     });
 
     test('it should 201 and return the created transaction', async () => {
-        const response = await request.post(url)
+        const response = await request.post(url).set('Authorization', loginHeader)
             .send({
                 name: 'Tandarts',
                 location: 'Straat 100',
@@ -144,7 +142,7 @@ describe('PUT /api/departments/:id', () => {
     });
 
     test('!t should 200 and return the updated department', async () => {
-        const response = await request.put(`${url}/7f28c5f9-d711-4cd6-ac15-d13d71abff50`)
+        const response = await request.put(`${url}/7f28c5f9-d711-4cd6-ac15-d13d71abff50`).set('Authorization', loginHeader)
             .send({
                 name: 'heelkunde',
                 location : 'straat',
@@ -169,7 +167,7 @@ describe('DELETE /api/department/:id',() => {
     });
 
     test('it should 204 and return nothing', async () => {
-        const response = await request.delete(`${url}/7f28c5f9-d711-4cd6-ac15-d13d71abff50`);
+        const response = await request.delete(`${url}/7f28c5f9-d711-4cd6-ac15-d13d71abff50`).set('Authorization', loginHeader);
         expect(response.status).toBe(204);
         expect(response.body).toEqual({});
         
