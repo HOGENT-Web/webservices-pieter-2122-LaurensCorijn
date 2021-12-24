@@ -3,6 +3,7 @@ const departmentService = require('../service/department');
 const { requireAuthentication, makeRequireRole } = require('../core/auth');
 const Role = require('../core/roles');
 const Joi = require('joi');
+const validate = require('./_validation.js');
 
 /**
  * @swagger
@@ -116,7 +117,11 @@ getAllDepartments.validationScheme = {
 const getDepartmentById = async (ctx) => {
     ctx.body = await departmentService.getById(ctx.params.id);
 };
-
+getDepartmentById.validationScheme = {
+    params: {
+      id: Joi.string().uuid(),
+    },
+  };
 
 /**
  * @swagger
@@ -142,6 +147,13 @@ const createDepartment = async (ctx) => {
     const newDepartment = await departmentService.create(ctx.request.body);
     ctx.body = newDepartment;
     ctx.status = 201;
+};
+createDepartment.validationScheme = {
+	body: {
+        name: Joi.string(),
+        location: Joi.string(),
+        hospital: Joi.string(),		
+  },
 };
 
 /**
@@ -170,6 +182,16 @@ const updateDepartment = async (ctx) => {
     ctx.body = await departmentService.updateById(ctx.params.id,ctx.request.body);
     ctx.status = 201;
 };
+updateDepartment.validationScheme = {
+    params: {
+      id: Joi.string().uuid(),
+    },
+    body: {
+        name: Joi.string(),
+        location: Joi.string(),
+        hospital: Joi.string(),
+    },
+  };
 
 /**
  * @swagger
@@ -190,6 +212,11 @@ const deleteDepartment = async (ctx) => {
     await departmentService.deleteById(ctx.params.id);
     ctx.status = 204;
 };
+deleteDepartment.validationScheme = {
+    params: {
+      id: Joi.string().uuid(),
+    },
+  }
 
 module.exports = (app) => {
     const router = new Router({
@@ -198,11 +225,11 @@ module.exports = (app) => {
 
     const requireAdmin = makeRequireRole(Role.ADMIN);
 
-    router.get('/',getAllDepartments);
-    router.get('/:id',getDepartmentById);
-    router.post('/',requireAuthentication,requireAdmin,createDepartment);
-    router.put('/:id',requireAuthentication,requireAdmin,updateDepartment);
-    router.delete('/:id',requireAuthentication,requireAdmin,deleteDepartment);
+    router.get('/', validate(getAllDepartments.validationScheme),getAllDepartments);
+    router.get('/:id',validate(getDepartmentById.validationScheme),getDepartmentById);
+    router.post('/',requireAuthentication,requireAdmin,validate(createDepartment.validationScheme),createDepartment);
+    router.put('/:id',requireAuthentication,validate(updateDepartment.validationScheme),requireAdmin,updateDepartment);
+    router.delete('/:id',requireAuthentication,validate(deleteDepartment.validationScheme),requireAdmin,deleteDepartment);
 
     app.use(router.routes()).use(router.allowedMethods());
 }
