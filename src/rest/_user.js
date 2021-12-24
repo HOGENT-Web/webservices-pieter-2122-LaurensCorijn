@@ -1,5 +1,7 @@
 const Router = require('@koa/router');
 const userService = require('../service/user');
+const { requireAuthentication, makeRequireRole } = require('../core/auth');
+const Role = require('../core/roles');
 
 const getAllUsers = async(ctx) => {
     const users = await userService.getAll(
@@ -40,10 +42,12 @@ module.exports = function installUsersRoutes(app) {
         prefix: '/users',
     });
 
-    router.get('/', getAllUsers);
-    router.get('/:id',getUserById);
-    router.put('/:id', updateUserById);
-    router.delete('/:id', deleteUserById);
+    const requireAdmin = makeRequireRole(Role.ADMIN);
+
+    router.get('/', requireAuthentication, requireAdmin, getAllUsers);
+    router.get('/:id', requireAuthentication,getUserById);
+    router.put('/:id', requireAuthentication,updateUserById);
+    router.delete('/:id', requireAuthentication, deleteUserById);
     router.post('/login', login);
     router.post('/register', register);
     

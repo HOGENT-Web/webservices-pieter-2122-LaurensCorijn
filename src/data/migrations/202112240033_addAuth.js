@@ -9,12 +9,15 @@ module.exports = {
       table.string('password_hash')
         .notNullable();
 
+        table.jsonb('roles')
+        .notNullable();
+
       table.unique('email', 'idx_user_email_unique');
     });
   },
   down: (knex) => {
     return knex.schema.alterTable(tables.user, (table) => {
-      table.dropColumns('email', 'password_hash');
+      table.dropColumns('email', 'password_hash','roles');
     });
   },
 };

@@ -28,7 +28,7 @@ module.exports = {
 		},
 		jwt: {
 			secret: 'langesecretdienietontdektwordtenenkelvrdevelopmentwordtgebruikt',
-			expirationInterval: 60 * 60 * 1000, // ms (1 hour)
+			expirationInterval: 60 * 60 * 1000,
 			issuer: 'api.hogent.be',
 			audience: 'api.hogent.be',
 		  },

@@ -23,7 +23,8 @@ const create = async({
     firstname,
     lastname,
     email,
-    passwordHash
+    passwordHash,
+    roles,
 }) => {
     try{
         const id = uuid.v4();
@@ -33,7 +34,8 @@ const create = async({
             firstname,
             lastname,
             email,
-            password_hash: passwordHash
+            password_hash: passwordHash,
+            roles: JSON.stringify(roles),
         });
         return await findById(id);
     }catch(error){
