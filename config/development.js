@@ -9,7 +9,8 @@ module.exports = {
 	},
   database: {
 		client: 'mysql2',
-		name: 'api',		
+		name: 'api',
+		port: 3306,		
 	},
 	pagination: {
 		limit: 100,

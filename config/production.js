@@ -1,6 +1,6 @@
 module.exports = {
   log: {
-    level: 'info',
+    level: 'silly',
     disabled: false,
   },
   cors: {
@@ -9,6 +9,7 @@ module.exports = {
   },database: {
 		client: 'mysql2',
 		name: 'api',
+    port: 3306,
 	},
   pagination: {
     limit: 100,
