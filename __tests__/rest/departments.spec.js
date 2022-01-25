@@ -1,3 +1,4 @@
+const test = require('../../config/test');
 const {  tables  } = require('../../src/data');
 const { withServer , loginAdmin} = require('../supertest.setup');
 
@@ -71,6 +72,7 @@ describe('Departments', ()=>{
             expect(response.body.offset).toBe(0);
             expect(response.body.data.length).toBe(4);
         });
+
 });
 
 describe('GET /api/departments/:id', () => {
